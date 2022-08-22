@@ -41,40 +41,40 @@ func New(router *mux.Router, provider Provider) *Services {
 }
 
 // EnableBlocks enable service for "block" group.
-func (routes *Services) EnableBlocks() *Services {
+func (s *Services) EnableBlocks() *Services {
 	log.Print("blocks service enabled")
 	// Groups in this context eg. Uncle, Transaction, Block, Send.
 	// Routes for block group. eg: eth_get[Block]ByNumber, eth_get[Block]ByHash
-	block := routes.r.PathPrefix("/block").Subrouter()
-	block.HandleFunc("/", routes.p.BlockNumber).Methods(http.MethodGet)
+	block := s.r.PathPrefix("/block").Subrouter()
+	block.HandleFunc("/", s.p.BlockNumber).Methods(http.MethodGet)
 
 	// Subrouter to group "by" condition
 	by := block.PathPrefix("/by").Subrouter()
-	by.HandleFunc("/number/{block}/{flag}", routes.p.BlockByNumber).Methods(http.MethodGet)
-	by.HandleFunc("/hash/{block}/{flag}", routes.p.BlockByHash).Methods(http.MethodGet)
-	return routes
+	by.HandleFunc("/number/{block}/{flag}", s.p.BlockByNumber).Methods(http.MethodGet)
+	by.HandleFunc("/hash/{block}/{flag}", s.p.BlockByHash).Methods(http.MethodGet)
+	return s
 }
 
 // EnableTransactions enable service for "transaction" group.
-func (routes *Services) EnableTransactions() *Services {
+func (s *Services) EnableTransactions() *Services {
 	log.Print("transactions service enabled")
 	// Groups in this context eg. Uncle, Transaction, Block, Send.
 	// Routes for transactions group eg. eth_getTransactionByBlockNumberAndIndex
-	transactions := routes.r.PathPrefix("/tx").Subrouter()
+	transactions := s.r.PathPrefix("/tx").Subrouter()
 
 	// Subrouter to group "by" condition
 	by := transactions.PathPrefix("/by").Subrouter()
-	by.HandleFunc("/number/{block}/{index}", routes.p.TxByBlockNumberAndIndex).Methods(http.MethodGet)
-	by.HandleFunc("/hash/{block}/{index}", routes.p.TxByBlockHashAndIndex).Methods(http.MethodGet)
-	return routes
+	by.HandleFunc("/number/{block}/{index}", s.p.TxByBlockNumberAndIndex).Methods(http.MethodGet)
+	by.HandleFunc("/hash/{block}/{index}", s.p.TxByBlockHashAndIndex).Methods(http.MethodGet)
+	return s
 }
 
 // EnableTSend enable service for "send" group.
-func (routes *Services) EnableSendTransactions() *Services {
+func (s *Services) EnableSendTransactions() *Services {
 	log.Print("send service enabled")
 	// Groups in this context eg. Uncle, Transaction, Block, Send.
 	// Routes for transactions group eg. eth_getTransactionByBlockNumberAndIndex
-	transactions := routes.r.PathPrefix("/send").Subrouter()
-	transactions.HandleFunc("/raw", routes.p.SendRawTransaction).Methods(http.MethodPost)
-	return routes
+	transactions := s.r.PathPrefix("/send").Subrouter()
+	transactions.HandleFunc("/raw", s.p.SendRawTransaction).Methods(http.MethodPost)
+	return s
 }
